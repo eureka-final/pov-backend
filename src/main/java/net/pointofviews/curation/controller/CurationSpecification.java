@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import net.pointofviews.common.dto.BaseResponse;
 import net.pointofviews.curation.dto.request.CreateCurationRequest;
 import net.pointofviews.curation.dto.response.ReadCurationListResponse;
@@ -57,10 +58,10 @@ public interface CurationSpecification {
             )
     })
     ResponseEntity<?> createCuration(
-            @RequestHeader(value = "Authorization", required = true)
-            String authorization,
-            @RequestBody CreateCurationRequest createCurationRequest
+//            @RequestHeader(value = "Authorization", required = true) String authorization,
+            @Valid @RequestBody CreateCurationRequest createCurationRequest
     );
+
 
     @Operation(summary = "모든 큐레이션 조회", description = "관리자가 생성한 모든 큐레이션을 조회합니다.")
     @ApiResponses({
@@ -90,10 +91,43 @@ public interface CurationSpecification {
                     )
             )
     })
-    @GetMapping("/curations/{curationId}")
     ResponseEntity<BaseResponse<ReadCurationResponse>> readCuration(
-            @PathVariable
-            Long curationId
+            @PathVariable Long curationId
+    );
+
+
+
+
+    @Operation(summary = "큐레이션 수정", description = "관리자가 기존의 큐레이션을 수정합니다.")
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "수정 성공",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "message": "큐레이션 수정이 성공적으로 완료되었습니다.."
+                                    }
+                                    """)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "수정 실패",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "message": "잘못된 요청입니다."
+                                    }
+                                    """)
+                    )
+            )
+    })
+    ResponseEntity<?> updateCuration(
+            @PathVariable Long curationId,
+            @Valid @RequestBody CreateCurationRequest createCurationRequest
     );
 
     @Operation(summary = "큐레이션 삭제", description = "큐레이션 ID를 기반으로 특정 큐레이션을 삭제합니다.")
@@ -123,9 +157,7 @@ public interface CurationSpecification {
                     )
             )
     })
-    @DeleteMapping("/curations/{curationId}")
-    ResponseEntity<Void> deleteCuration(
-            @PathVariable
-            Long curationId
+    ResponseEntity<?> deleteCuration(
+            @PathVariable Long curationId
     );
 }

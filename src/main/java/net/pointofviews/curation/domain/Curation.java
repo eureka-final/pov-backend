@@ -44,4 +44,11 @@ public class Curation extends BaseEntity {
         this.title = title;
         this.description = description;
     }
+
+    public void updateCuration(String theme, CurationCategory category, String title, String description) {
+        this.theme = theme;
+        this.category = category;
+        this.title = title;
+        this.description = description;
+    }
 }
