@@ -10,21 +10,21 @@ CREATE TABLE common_code_group
 CREATE TABLE movie
 (
     id          bigint auto_increment primary key,
-    released    date null,
-    tmdb_id     int null unique,
+    released    date         null,
+    tmdb_id     int          null unique,
     plot        varchar(255) null,
     poster      varchar(255) null,
     title       varchar(255) null,
     backdrop    varchar(255) null,
-    film_rating varchar(10) null
+    film_rating varchar(10)  null
 );
 
 CREATE TABLE club
 (
     id               binary(16)   not null primary key,
-    is_public        bit not null,
-    max_participants int null,
-    created_at       datetime null,
+    is_public        bit          not null,
+    max_participants int          null,
+    created_at       datetime     null,
     description      varchar(255) null,
     name             varchar(255) null unique,
     club_image       varchar(255) null
@@ -32,24 +32,24 @@ CREATE TABLE club
 
 CREATE TABLE member
 (
-    birth            date null,
-    is_notice_active bit not null,
-    created_at       datetime null,
-    deleted_at       datetime null,
+    birth            date                     null,
+    is_notice_active bit                      not null,
+    created_at       datetime                 null,
+    deleted_at       datetime                 null,
     id               binary(16)               not null primary key,
-    email            varchar(255) null,
-    nickname         varchar(255) null unique,
-    profile_image    varchar(255) null,
+    email            varchar(255)             null,
+    nickname         varchar(255)             null unique,
+    profile_image    varchar(255)             null,
     role_type        enum ('ADMIN', 'USER')   null,
     social_type      enum ('GOOGLE', 'NAVER') null
 );
 
 CREATE TABLE premiere
 (
-    is_payment_required bit not null,
+    is_payment_required bit          not null,
     id                  bigint auto_increment primary key,
-    start_at            datetime null,
-    content             text null,
+    start_at            datetime     null,
+    content             text         null,
     event_image         varchar(255) null,
     title               varchar(255) null
 );
@@ -71,7 +71,7 @@ CREATE TABLE people
     id        bigint auto_increment primary key,
     name      varchar(255) null,
     image_url varchar(255) null,
-    tmdb_id   int null unique
+    tmdb_id   int          null unique
 );
 
 CREATE TABLE movie_crew
@@ -98,11 +98,11 @@ CREATE TABLE movie_cast
 
 CREATE TABLE member_club
 (
-    is_leader  bit not null,
-    created_at datetime null,
+    is_leader  bit        not null,
+    created_at datetime   null,
     id         bigint auto_increment primary key,
-    club_id    binary(16)  null,
-    member_id  binary(16)  null,
+    club_id    binary(16) null,
+    member_id  binary(16) null,
     CONSTRAINT FK_member_club_club FOREIGN KEY (club_id) REFERENCES club (id),
     CONSTRAINT FK_member_club_member FOREIGN KEY (member_id) REFERENCES member (id)
 );
@@ -117,35 +117,35 @@ CREATE TABLE club_favor_genre
 
 CREATE TABLE club_movie
 (
-    created_at datetime null,
+    created_at datetime   null,
     id         bigint auto_increment primary key,
-    movie_id   bigint not null,
-    club_id    binary(16)  not null,
+    movie_id   bigint     not null,
+    club_id    binary(16) not null,
     CONSTRAINT FK_club_movie_movie FOREIGN KEY (movie_id) REFERENCES movie (id),
     CONSTRAINT FK_club_movie_club FOREIGN KEY (club_id) REFERENCES club (id)
 );
 
 CREATE TABLE curation
 (
-    created_at  datetime null,
+    created_at  datetime                                                                    null,
     id          bigint auto_increment primary key,
     member_id   binary(16)                                                                  not null,
-    description varchar(255) null,
-    theme       varchar(255) null,
-    title       varchar(255) null,
+    description varchar(255)                                                                null,
+    theme       varchar(255)                                                                null,
+    title       varchar(255)                                                                null,
     category    enum ('ACTOR', 'AWARD', 'COUNTRY', 'DIRECTOR', 'GENRE', 'OTHER', 'RELEASE') null,
-    start_time  datetime null,
+    start_time  datetime                                                                    null,
     CONSTRAINT FK_curation_member FOREIGN KEY (member_id) REFERENCES member (id)
 );
 
 CREATE TABLE entry
 (
-    amount      int null,
-    quantity    int null,
-    created_at  datetime null,
+    amount      int        null,
+    quantity    int        null,
+    created_at  datetime   null,
     id          bigint auto_increment primary key,
-    premiere_id bigint not null,
-    member_id   binary(16)  not null,
+    premiere_id bigint     not null,
+    member_id   binary(16) not null,
     CONSTRAINT FK_entry_member FOREIGN KEY (member_id) REFERENCES member (id),
     CONSTRAINT FK_entry_premiere FOREIGN KEY (premiere_id) REFERENCES premiere (id)
 );
@@ -161,8 +161,8 @@ CREATE TABLE member_favor_genre
 CREATE TABLE movie_content
 (
     id           bigint auto_increment primary key,
-    movie_id     bigint null,
-    content      varchar(255) null,
+    movie_id     bigint                    null,
+    content      varchar(255)              null,
     content_type enum ('IMAGE', 'YOUTUBE') null,
     CONSTRAINT FK_movie_content_movie FOREIGN KEY (movie_id) REFERENCES movie (id)
 );
@@ -171,16 +171,16 @@ CREATE TABLE movie_genre
 (
     genre_code varchar(2) null,
     id         bigint auto_increment primary key,
-    movie_id   bigint null,
+    movie_id   bigint     null,
     CONSTRAINT FK_movie_genre_movie FOREIGN KEY (movie_id) REFERENCES movie (id)
 );
 
 CREATE TABLE movie_like
 (
-    created_at datetime null,
+    created_at datetime   null,
     id         bigint auto_increment primary key,
-    movie_id   bigint null,
-    member_id  binary(16)  null,
+    movie_id   bigint     null,
+    member_id  binary(16) null,
     is_liked   boolean default false,
     CONSTRAINT FK_movie_like_member FOREIGN KEY (member_id) REFERENCES member (id),
     CONSTRAINT FK_movie_like_movie FOREIGN KEY (movie_id) REFERENCES movie (id)
@@ -193,11 +193,20 @@ CREATE TABLE movie_like_count
     CONSTRAINT FK_movie_like_count_movie FOREIGN KEY (movie_id) REFERENCES movie (id)
 );
 
+CREATE TABLE daily_movie_like
+(
+    id               bigint auto_increment primary key,
+    movie_id         bigint   null,
+    total_like_count bigint   null,
+    created_at       datetime null,
+    CONSTRAINT FK_daily_movie_like_movie FOREIGN KEY (movie_id) REFERENCES movie (id)
+);
+
 create table payment
 (
-    amount      int null,
-    approved_at datetime null,
-    created_at  datetime null,
+    amount      int          null,
+    approved_at datetime     null,
+    created_at  datetime     null,
     id          bigint auto_increment
         primary key,
     member_id   binary(16)   null,
@@ -209,12 +218,12 @@ create table payment
 
 create table payment_transaction
 (
-    amount          int null,
-    created_at      datetime null,
+    amount          int                                   null,
+    created_at      datetime                              null,
     id              bigint auto_increment
         primary key,
-    payment_id      bigint null,
-    transaction_key varchar(255) null,
+    payment_id      bigint                                null,
+    transaction_key varchar(255)                          null,
     status          enum ('FAILED', 'PENDING', 'SUCCESS') null,
     type            enum ('CANCEL', 'PAY', 'REFUND')      null,
     constraint UK_payment_transaction
@@ -225,12 +234,12 @@ create table payment_transaction
 
 create table temp_payment
 (
-    amount     int null,
-    created_at datetime null,
+    amount     int             null,
+    created_at datetime        null,
     id         bigint auto_increment
         primary key,
     member_id  binary(16)      null,
-    order_id   varchar(255) null,
+    order_id   varchar(255)    null,
     type       enum ('NORMAL') null,
     constraint UK_temp_payment_member
         unique (member_id),
@@ -240,29 +249,29 @@ create table temp_payment
 
 CREATE TABLE recommended_movie
 (
-    created_at datetime null,
+    created_at datetime   null,
     id         bigint auto_increment primary key,
-    movie_id   bigint null,
-    member_id  binary(16)  null,
+    movie_id   bigint     null,
+    member_id  binary(16) null,
     CONSTRAINT FK_recommended_movie_movie FOREIGN KEY (movie_id) REFERENCES movie (id),
     CONSTRAINT FK_recommended_movie_member FOREIGN KEY (member_id) REFERENCES member (id)
 );
 
 create table review
 (
-    disabled    bit    not null,
-    is_spoiler  bit    not null,
-    created_at  datetime null,
-    deleted_at  datetime null,
+    disabled    bit          not null,
+    is_spoiler  bit          not null,
+    created_at  datetime     null,
+    deleted_at  datetime     null,
     id          bigint auto_increment
         primary key,
-    modified_at datetime null,
+    modified_at datetime     null,
     member_id   binary(16)   null,
-    contents    text null,
+    contents    text         null,
     title       varchar(255) null,
     preference  varchar(255) null,
     thumbnail   varchar(255) null,
-    movie_id    bigint not null,
+    movie_id    bigint       not null,
     CONSTRAINT FK_review_member FOREIGN KEY (member_id) REFERENCES member (id),
     CONSTRAINT FK_review_movie FOREIGN KEY (movie_id) REFERENCES movie (id)
 );
@@ -271,16 +280,16 @@ CREATE TABLE review_keyword_link
 (
     review_keyword_code varchar(2) null,
     id                  bigint auto_increment primary key,
-    review_id           bigint null,
+    review_id           bigint     null,
     CONSTRAINT FK_review_keyword_link_review FOREIGN KEY (review_id) REFERENCES review (id)
 );
 
 CREATE TABLE review_like
 (
-    created_at datetime null,
+    created_at datetime   null,
     id         bigint auto_increment primary key,
-    review_id  bigint null,
-    member_id  binary(16)  null,
+    review_id  bigint     null,
+    member_id  binary(16) null,
     is_liked   boolean default false,
     CONSTRAINT FK_review_like_review FOREIGN KEY (review_id) REFERENCES review (id),
     CONSTRAINT FK_review_like_member FOREIGN KEY (member_id) REFERENCES member (id)
@@ -295,40 +304,40 @@ CREATE TABLE review_like_count
 
 create table notice
 (
-    is_active      bit not null,
+    is_active      bit                     not null,
     notice_type    enum ('REVIEW', 'CLUB') null,
-    created_at     datetime null,
+    created_at     datetime                null,
     id             bigint auto_increment
         primary key,
     member_id      binary(16)              null,
-    description    varchar(255) null,
-    notice_content text null,
-    notice_title   varchar(255) null
+    description    varchar(255)            null,
+    notice_content text                    null,
+    notice_title   varchar(255)            null
 );
 
 create table notice_receive
 (
-    is_read        bit not null,
+    is_read        bit                     not null,
     notice_type    enum ('REVIEW', 'CLUB') null,
-    created_at     datetime null,
+    created_at     datetime                null,
     id             bigint auto_increment
         primary key,
-    notice_send_id bigint null,
+    notice_send_id bigint                  null,
     member_id      binary(16)              null,
-    notice_content text null,
-    notice_title   varchar(255) null,
+    notice_content text                    null,
+    notice_title   varchar(255)            null,
     constraint FK_notice_receive_member
         foreign key (member_id) references member (id)
 );
 
 create table notice_send
 (
-    is_succeed            bit not null,
+    is_succeed            bit      not null,
     created_at            datetime null,
     id                    bigint auto_increment
         primary key,
-    notice_id             bigint null,
-    notice_content_detail text null,
+    notice_id             bigint   null,
+    notice_content_detail text     null,
     constraint FK_notice_send_notice
         foreign key (notice_id) references notice (id)
 );
@@ -342,7 +351,7 @@ create table country
 create table movie_country
 (
     id         bigint auto_increment primary key,
-    country_id bigint    not null,
+    country_id bigint not null,
     movie_id   bigint not null,
     constraint FK_country foreign key (country_id) references country (id),
     constraint FK_movie foreign key (movie_id) references movie (id)

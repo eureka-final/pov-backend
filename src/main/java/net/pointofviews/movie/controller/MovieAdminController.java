@@ -3,15 +3,16 @@ package net.pointofviews.movie.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.pointofviews.common.dto.BaseResponse;
+import net.pointofviews.member.domain.Member;
 import net.pointofviews.movie.dto.request.CreateMovieRequest;
-import net.pointofviews.movie.dto.response.SearchCreditApiResponse;
-import net.pointofviews.movie.dto.response.SearchFilteredMovieDetailResponse;
-import net.pointofviews.movie.dto.response.SearchMovieApiListResponse;
-import net.pointofviews.movie.dto.response.SearchReleaseApiResponse;
+import net.pointofviews.movie.dto.response.*;
+import net.pointofviews.movie.service.MovieAdminService;
 import net.pointofviews.movie.service.MovieApiSearchService;
 import net.pointofviews.movie.service.MovieContentService;
 import net.pointofviews.movie.service.MovieService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,7 @@ public class MovieAdminController implements MovieAdminSpecification {
 
     private final MovieContentService movieContentService;
     private final MovieApiSearchService movieApiSearchService;
+    private final MovieAdminService movieAdminService;
     private final MovieService movieService;
 
     @Override
@@ -176,5 +178,20 @@ public class MovieAdminController implements MovieAdminSpecification {
         String youtubeRegex = "^(https?://)?(www\\.)?(youtube\\.com|youtu\\.be)/.+$";
 
         return url.matches(youtubeRegex);
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/likes")
+    public ResponseEntity<BaseResponse<ReadDailyMovieLikeListResponse>> readDailyMovieLikeList(
+            @AuthenticationPrincipal(expression = "member") Member loginMember
+    ) {
+        ReadDailyMovieLikeListResponse response = movieAdminService.findDailyMovieLikeList(loginMember);
+
+        if (response.movies().isEmpty()) {
+            return BaseResponse.noContent();
+        }
+
+        return BaseResponse.ok("하루 동안 좋아요를 가장 많이 받은 영화 목록을 성공적으로 조회했습니다.", response);
     }
 }
