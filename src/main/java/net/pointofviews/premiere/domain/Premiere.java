@@ -22,7 +22,11 @@ public class Premiere {
 
     private String title;
 
+    private String thumbnail;
+
     private String eventImage;
+
+    private Integer price;
 
     private boolean isPaymentRequired;
 
@@ -31,9 +35,19 @@ public class Premiere {
     private LocalDateTime endAt;
 
     @Builder
-    private Premiere(String title, String eventImage, boolean isPaymentRequired, LocalDateTime startAt, LocalDateTime endAt) {
+    private Premiere(
+            String title,
+            String thumbnail,
+            String eventImage,
+            Integer price,
+            boolean isPaymentRequired,
+            LocalDateTime startAt,
+            LocalDateTime endAt
+    ) {
         this.title = title;
+        this.thumbnail = thumbnail;
         this.eventImage = eventImage;
+        this.price = price;
         this.isPaymentRequired = isPaymentRequired;
         this.startAt = startAt;
         this.endAt = endAt;
@@ -41,6 +55,7 @@ public class Premiere {
 
     public void updatePremiere(PremiereRequest request) {
         this.title = request.title();
+        this.price = request.price();
         this.isPaymentRequired = request.isPaymentRequired();
         this.startAt = request.startAt();
         this.endAt = request.endAt();
@@ -48,5 +63,9 @@ public class Premiere {
 
     public void updateEventImage(String eventImage) {
         this.eventImage = eventImage;
+    }
+
+    public void updateThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
 }

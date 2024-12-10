@@ -14,6 +14,9 @@ import net.pointofviews.member.domain.Member;
 import net.pointofviews.premiere.dto.request.PremiereRequest;
 import net.pointofviews.premiere.dto.response.ReadDetailPremiereResponse;
 import net.pointofviews.premiere.dto.response.ReadPremiereListResponse;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -59,7 +62,8 @@ public interface PremiereAdminSpecification {
             @AuthenticationPrincipal(expression = "member") Member loginMember,
             @Parameter(description = "수정할 시사회 ID", example = "123") Long premiereId,
             @RequestPart(value = "request") @Valid PremiereRequest request,
-            @RequestPart(value = "eventImage", required = false) MultipartFile file
+            @RequestPart(value = "eventImage", required = false) MultipartFile eventImage,
+            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail
     );
 
     @Operation(
@@ -94,9 +98,13 @@ public interface PremiereAdminSpecification {
             description = "등록된 모든 시사회 목록을 조회하는 API."
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "시사회 전체 조회 성공")
+            @ApiResponse(responseCode = "200", description = "시사회 전체 조회 성공"),
+            @ApiResponse(responseCode = "204", description = "아직 시사회 정보 없음")
     })
-    ResponseEntity<BaseResponse<ReadPremiereListResponse>> readPremiereList(@AuthenticationPrincipal(expression = "member") Member loginMember);
+    ResponseEntity<BaseResponse<ReadPremiereListResponse>> readPremiereList(
+            @AuthenticationPrincipal(expression = "member") Member loginMember,
+            @PageableDefault(size = 8, sort = "startAt", direction = Sort.Direction.DESC) Pageable pageable
+    );
 
     @Operation(
             summary = "시사회 상세 조회",

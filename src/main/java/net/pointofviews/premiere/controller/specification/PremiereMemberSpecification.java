@@ -35,13 +35,13 @@ public interface PremiereMemberSpecification {
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
                                     {
-                                      "message": "존재하지 않는 시사회입니다."
+                                      "message": "시사회(Id: 123)가 존재하지 않습니다."
                                     }
                                     """)
                     ))
 
     })
-    ResponseEntity<BaseResponse<ReadDetailPremiereResponse>> readPremiereDetails(
+    ResponseEntity<BaseResponse<ReadDetailPremiereResponse>> readPremiereDetail(
             @Parameter(description = "조회할 시사회 ID", example = "123") Long premiereId
     );
 
@@ -66,7 +66,7 @@ public interface PremiereMemberSpecification {
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
                                     {
-                                      "message": "존재하지 않는 시사회입니다."
+                                      "message": "시사회(Id: 123)가 존재하지 않습니다."
                                     }
                                     """)
                     ))
