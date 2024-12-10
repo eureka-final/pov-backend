@@ -1,0 +1,2 @@
+ALTER TABLE movie
+    MODIFY COLUMN plot TEXT;

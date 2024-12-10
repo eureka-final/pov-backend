@@ -1,4 +1,4 @@
-package net.pointofviews.premiere.service.imple;
+package net.pointofviews.premiere.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import net.pointofviews.common.service.S3Service;
@@ -7,8 +7,12 @@ import net.pointofviews.member.repository.MemberRepository;
 import net.pointofviews.premiere.domain.Premiere;
 import net.pointofviews.premiere.dto.request.PremiereRequest;
 import net.pointofviews.premiere.dto.response.ReadDetailPremiereResponse;
+import net.pointofviews.premiere.dto.response.ReadPremiereListResponse;
+import net.pointofviews.premiere.dto.response.ReadPremiereResponse;
 import net.pointofviews.premiere.repository.PremiereRepository;
 import net.pointofviews.premiere.service.PremiereAdminService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +39,8 @@ public class PremiereAdminServiceImpl implements PremiereAdminService {
             Member loginMember,
             Long premiereId,
             PremiereRequest request,
-            MultipartFile file
+            MultipartFile eventImage,
+            MultipartFile thumbnail
     ) {
         if (memberRepository.findById(loginMember.getId()).isEmpty()) {
             throw adminNotFound(loginMember.getId());
@@ -44,30 +49,52 @@ public class PremiereAdminServiceImpl implements PremiereAdminService {
         Premiere premiere = premiereRepository.findById(premiereId)
                 .orElseThrow(() -> premiereNotFound(premiereId));
 
-        String oldEventImage = premiere.getEventImage();
+        // 이벤트 이미지 처리
+        String newEventImage = processImage(
+                eventImage,
+                premiere.getEventImage(),
+                "premieres/" + premiereId + "/event/"
+        );
 
-        if (file == null) {
-            if (oldEventImage != null) {
-                s3Service.deleteImage(oldEventImage);
-                premiere.updateEventImage(null);
-            }
-        } else {
+        if (newEventImage != null || eventImage == null) {
+            premiere.updateEventImage(newEventImage);
+        }
+
+        // 썸네일 이미지 처리
+        String newThumbnail = processImage(
+                thumbnail,
+                premiere.getThumbnail(),
+                "premieres/" + premiereId + "/thumbnail/"
+        );
+
+        if (newThumbnail != null || thumbnail == null) {
+            premiere.updateThumbnail(newThumbnail);
+        }
+
+        premiere.updatePremiere(request);
+    }
+
+    private String processImage(MultipartFile file, String oldImage, String folderPath) {
+        if (file != null && !file.isEmpty()) {
             s3Service.validateImageFile(file);
 
             String originalFileName = file.getOriginalFilename();
             String uniqueFileName = s3Service.createUniqueFileName(originalFileName);
-            String filePath = "premieres/" + premiereId + "/" + uniqueFileName;
+            String filePath = folderPath + uniqueFileName;
+            String newImageUrl = s3Service.saveImage(file, filePath);
 
-            String imageUrl = s3Service.saveImage(file, filePath);
-
-            if (oldEventImage != null) {
-                s3Service.deleteImage(oldEventImage);
+            if (oldImage != null) {
+                s3Service.deleteImage(oldImage);
             }
 
-            premiere.updateEventImage(imageUrl);
+            return newImageUrl;
+
+        } else if (oldImage != null) {
+            s3Service.deleteImage(oldImage);
+            return null;
         }
 
-        premiere.updatePremiere(request);
+        return null;
     }
 
     @Override
@@ -89,7 +116,24 @@ public class PremiereAdminServiceImpl implements PremiereAdminService {
     }
 
     @Override
-    public void findAllPremiere(Member loginMember) {
+    public ReadPremiereListResponse findAllPremiere(Member loginMember, Pageable pageable) {
+
+        if (memberRepository.findById(loginMember.getId()).isEmpty()) {
+            throw adminNotFound(loginMember.getId());
+        }
+
+        Page<Premiere> premierePage = premiereRepository.findAll(pageable);
+
+        Page<ReadPremiereResponse> premieres = premierePage.map(premiere ->
+                new ReadPremiereResponse(
+                        premiere.getId(),
+                        premiere.getTitle(),
+                        premiere.getThumbnail(),
+                        premiere.getStartAt()
+                )
+        );
+
+        return new ReadPremiereListResponse(premieres);
     }
 
     @Override
@@ -106,8 +150,10 @@ public class PremiereAdminServiceImpl implements PremiereAdminService {
                 premiere.getTitle(),
                 premiere.getStartAt(),
                 premiere.getEndAt(),
+                premiere.getPrice(),
                 premiere.isPaymentRequired(),
-                premiere.getEventImage()
+                premiere.getEventImage(),
+                premiere.getThumbnail()
         );
 
         return response;

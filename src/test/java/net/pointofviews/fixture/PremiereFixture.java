@@ -16,7 +16,9 @@ public class PremiereFixture {
 
         return Premiere.builder()
                 .title("시사회 제목" + RANDOM.nextInt(10))
-                .eventImage("https://example.com/premieres/1/premiere" + RANDOM.nextInt(10) + ".jpg")
+                .thumbnail("https://example.com/premieres/1/thumbnail/" + RANDOM.nextInt(10) + ".jpg")
+                .eventImage("https://example.com/premieres/1/event/" + RANDOM.nextInt(10) + ".jpg")
+                .price(RANDOM.nextInt(1000))
                 .isPaymentRequired(RANDOM.nextBoolean())
                 .startAt(startAt)
                 .endAt(endAt)

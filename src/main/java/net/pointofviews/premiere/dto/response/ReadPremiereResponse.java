@@ -12,10 +12,10 @@ public record ReadPremiereResponse(
         @Schema(description = "시사회 제목", example = "Avengers: Endgame World Premiere")
         String title,
 
-        @Schema(description = "시사회 설명", example = "Avengers: Endgame의 월드 프리미어 행사입니다.")
-        String description,
+        @Schema(description = "시사회 썸네일 이미지", example = "https://example.com/premieres/1/thumbnail/thumbnail.jpg")
+        String thumbnail,
 
-        @Schema(description = "시사회 시작 시간", example = "2024-12-15T18:00:00", type = "string")
+        @Schema(description = "시사회 응모 시작 일시", example = "2024-12-15T18:00:00", type = "date-time")
         LocalDateTime startAt
 ) {
 }
