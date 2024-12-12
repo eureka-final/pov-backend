@@ -24,7 +24,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             			m.profileImage,
             			mv.poster,
             			r.createdAt,
-            			(SELECT rlc.reviewLikeCount FROM ReviewLikeCount rlc WHERE rlc.review.id = r.id),
+            			COALESCE((SELECT rlc.reviewLikeCount FROM ReviewLikeCount rlc WHERE rlc.review.id = r.id), 0),
             			CASE WHEN EXISTS (SELECT 1 FROM ReviewLike rl WHERE rl.review.id = r.id AND rl.isLiked = true) THEN true ELSE false END,
             			r.isSpoiler
             	 )
@@ -47,7 +47,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             			m.profileImage,
             			mv.poster,
             			r.createdAt,
-            			(SELECT rlc.reviewLikeCount FROM ReviewLikeCount rlc WHERE rlc.review.id = r.id),
+            			COALESCE((SELECT rlc.reviewLikeCount FROM ReviewLikeCount rlc WHERE rlc.review.id = r.id), 0),
             			CASE WHEN EXISTS (SELECT 1 FROM ReviewLike rl WHERE rl.review.id = r.id AND rl.isLiked = true) THEN true ELSE false END,
             			r.isSpoiler
             	 )
@@ -79,7 +79,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             			m.profileImage,
             			mv.poster,
             			r.createdAt,
-            			(SELECT rlc.reviewLikeCount FROM ReviewLikeCount rlc WHERE rlc.review.id = r.id),
+            			COALESCE((SELECT rlc.reviewLikeCount FROM ReviewLikeCount rlc WHERE rlc.review.id = r.id), 0),
             			CASE WHEN EXISTS (SELECT 1 FROM ReviewLike rl WHERE rl.review.id = r.id AND rl.isLiked = true) THEN true ELSE false END,
             			r.isSpoiler
             	 )

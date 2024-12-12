@@ -549,7 +549,7 @@ class ReviewMemberServiceTest {
 
                 given(reviewRepository.findReviewDetailById(any())).willReturn(Optional.of(review));
                 given(reviewLikeRepository.getIsLikedByReviewId(any())).willReturn(Optional.of(true));
-                given(reviewLikeCountRepository.getReviewLikeCountByReviewId(any())).willReturn(10L);
+                given(reviewLikeCountRepository.getReviewLikeCountByReviewId(any())).willReturn(Optional.of(10L));
                 given(reviewKeywordLinkRepository.findKeywordsByReviewId(any())).willReturn(List.of("흥미진진", "몰입감"));
 
                 // when -- 테스트하고자 하는 행동

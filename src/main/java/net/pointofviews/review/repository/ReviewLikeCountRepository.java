@@ -6,6 +6,8 @@ import org.springframework.data.repository.query.Param;
 
 import net.pointofviews.review.domain.ReviewLikeCount;
 
+import java.util.Optional;
+
 public interface ReviewLikeCountRepository extends JpaRepository<ReviewLikeCount, Long> {
 
 	@Query(value = """
@@ -13,6 +15,6 @@ public interface ReviewLikeCountRepository extends JpaRepository<ReviewLikeCount
 		  FROM ReviewLikeCount rlc
 	  	 WHERE rlc.reviewId = :reviewId
 	""")
-	Long getReviewLikeCountByReviewId(@Param("reviewId") Long reviewId);
+	Optional<Long> getReviewLikeCountByReviewId(@Param("reviewId") Long reviewId);
 
 }
